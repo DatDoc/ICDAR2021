@@ -70,7 +70,7 @@ def run_training(opt):
         checkpoint = torch.load(last)
 
         start_epoch = checkpoint["epoch"]
-        model.load_state_dict(checkpoint['model_state_dict'])
+        model.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         scheduler.load_state_dict(checkpoint["scheduler"])
         best_loss = checkpoint["loss"]
@@ -82,6 +82,7 @@ def run_training(opt):
     for epoch in range(start_epoch, epochs):
         train_one_epoch(epoch, model, loss_tr, optimizer, train_loader, device, scheduler=scheduler)
         save_model(model, optimizer, scheduler, fold, epoch, save_every=False)
+        
         with torch.no_grad():
             val_loss = valid_one_epoch(epoch, model, loss_fn, val_loader, device, scheduler=None)
             early_stopping(val_loss, model, optimizer, scheduler, fold, epoch)

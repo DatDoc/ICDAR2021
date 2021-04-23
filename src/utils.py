@@ -23,10 +23,10 @@ def save_model(model, optimizer, scheduler, fold, epoch, save_every=False, best=
     }
     if save_every == True:
         if not (os.path.isdir('./saved_model')): os.mkdir('./saved_model')
-        torch.save(state, './saved_model/vit_fold_{}_epoch_{}'.format(fold+1, epoch+1))
+        torch.save(state, './saved_model/vit_fold_{}_epoch_{}'.format(fold, epoch+1))
     if best == True:
         if not (os.path.isdir('./best_model')): os.mkdir('./best_model')
-        torch.save(state, './best_model/vit_fold_{}_epoch_{}'.format(fold+1, epoch+1))
+        torch.save(state, './best_model/vit_fold_{}_epoch_{}'.format(fold, epoch+1))
 
 class EarlyStopping:
     def __init__(self, patience):
