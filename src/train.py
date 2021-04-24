@@ -83,7 +83,6 @@ def run_training(opt):
 
     optimizer = AdamW(model.parameters(), lr=1e-4, weight_decay=1e-6)
     scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=1, eta_min=1e-6, last_epoch=-1)
-    early_stopping = EarlyStopping(patience=opt.patience)
     scaler = GradScaler()
 
     loss_tr = nn.CrossEntropyLoss().to(device)
