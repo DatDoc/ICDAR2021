@@ -102,9 +102,11 @@ def run_training(opt):
     if opt.resume == True:
         checkpoint = torch.load(last)
 
+        start_epoch = checkpoint["epoch"]
         model.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         scheduler.load_state_dict(checkpoint["scheduler"])
+        best_loss = checkpoint["best_loss"]
 
 
     # --------------------------------------
@@ -113,12 +115,35 @@ def run_training(opt):
     print("[INFO] Start training...")
     for epoch in range(start_epoch, epochs):
         train_one_epoch(epoch, model, loss_tr, optimizer, train_loader, device, scheduler=scheduler, scaler=scaler)
-        save_model(model, optimizer, scheduler, opt.fold, epoch, save_every=False)
         with torch.no_grad():
             val_loss = valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_loader, device, scheduler=None)
-            early_stopping(val_loss, model, optimizer, scheduler, opt.fold, epoch)
-            if early_stopping.early_stop:
-                break
+            if val_loss < best_loss:
+                best_loss = val_loss
+                best_epoch = epoch
+                torch.save({
+                    'epoch': epoch,
+                    'model': model.state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                    'scheduler': scheduler.state_dict(),
+                    'best_loss': best_loss
+                },
+                os.path.join(best))
+        
+            print('best model found for epoch {}'.format(epoch+1))
+
+        torch.save({
+                'epoch': epoch,
+                'model': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict(),
+                'best_loss': best_loss
+            },
+            os.path.join(last))
+
+        if epoch - best_epoch > opt.patience:
+            print("Early stop achieved at", epoch+1)
+            break
+            
             
     del model, optimizer, train_loader, val_loader, scheduler, scaler
     torch.cuda.empty_cache()

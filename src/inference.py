@@ -1,6 +1,7 @@
 import argparse
 from tqdm import tqdm
 import pandas as pd
+import numpy as np
 
 import torch 
 
@@ -23,6 +24,7 @@ def inference_one_epoch(model, data_loader, device):
 
 def run_infer(opt):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    arch_weights = np.ones(15) # set weight for each arch base on f1 score on CV
     model_names = ['tf_efficientnet_b4_ns','resnext50_32x4d','vit_base_patch16_384']
     n_classes = 13
     weight_path = opt.weight_path
@@ -35,7 +37,7 @@ def run_infer(opt):
         test['image_id'] = list(os.listdir(TEST_DIR))
 
         if model_arch=='vit_base_patch16_384':
-            testset= ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms_vit())
+            testset= ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms(384))
         else: 
             testset= ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms(opt.img_size))
 
@@ -57,7 +59,8 @@ def run_infer(opt):
 
             with torch.no_grad():
                 for _ in range(tta):
-                    tst_preds += 1/tta * inference_one_epoch(model, tst_loader, device)]
+                    tst_preds += [inference_one_epoch(model, tst_loader, device)]
+
         avg_tst_preds = np.mean(tst_preds, axis=0)
 
         if not (os.path.isdir('./total_preds')): os.mkdir('./total_preds')

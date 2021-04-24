@@ -95,6 +95,7 @@ def valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_l
         total=len(handwritten_val_loader), 
         desc = "Handwritten validation epoch " + str(epoch+1),
         position=0, leave=True)
+        
     printed_status = tqdm(
         enumerate(printed_val_loader), 
         total=len(printed_val_loader), 
