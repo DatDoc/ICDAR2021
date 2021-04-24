@@ -7,6 +7,7 @@ import torch
 from utils import *
 from augmentations import *
 from models.ViT import Classifier
+from datasets import ICDARDataset
 
 def inference_one_epoch(model, data_loader, device):
     model.eval()
@@ -24,6 +25,10 @@ def run_infer(opt):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_names = ['tf_efficientnet_b4_ns','resnext50_32x4d','vit_base_patch16_384']
     n_classes = 13
+    model_weights = [1,1,1,1,1,1]
+    weight_path = opt.weight_path
+    weights =  sorted(os.listdir(weight_path))
+    
     for ix, model_arch in enumerate(model_names):
 
         TEST_DIR = opt.test_dir
@@ -31,9 +36,9 @@ def run_infer(opt):
         test['image_id'] = list(os.listdir(TEST_DIR))
 
         if model_arch=='vit_base_patch16_384':
-            testset= CassavaDataset(test, TEST_DIR, transforms=get_inference_transforms_vit())
+            testset= ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms_vit())
         else: 
-            testset= CassavaDataset(test, TEST_DIR, transforms=get_inference_transforms(opt.img_size))
+            testset= ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms(opt.img_size))
 
         tst_loader = DataLoader(
             testset, 
@@ -47,9 +52,9 @@ def run_infer(opt):
 
         tst_preds = []
 
-        for i,weight in enumerate(CFG['weight_path'][ix*2:ix*2+2]):    
+        for i,weight in enumerate(weights[ix*2:ix*2+2]):    
 
-            model.load_state_dict(torch.load(os.path.join('../input/cassava-ensemble-model',weight))['model'])
+            model.load_state_dict(torch.load(os.path.join(weight_path, weight))['model'])
 
             with torch.no_grad():
                 for _ in range(CFG['tta']):
@@ -58,6 +63,7 @@ def run_infer(opt):
 
         if not (os.path.isdir('./total_preds')): os.mkdir('./total_preds')
         np.save('./total_preds/total_preds.npy', tst_preds)
+
         if not (os.path.isdir('./mean_preds')): os.mkdir('./mean_preds')
         np.save('./mean_preds/mean_preds.npy', avg_tst_preds)
 
@@ -74,6 +80,7 @@ if __name__ == "__main__":
     parser.add_argument('--work_dir', type=str, default='CLIP/fold0', help='path to save model')
     parser.add_argument('--weight_path', type=str, help='path to stored weights')
     parser.add_argument('--img_size', type=int, default=224, help='resize the image')
+    parser.add_argument('--tta', type=int, default=2, help='number of tta')
     opt = parser.parse_args()
 
     seed_torch(seed=opt.seed)
