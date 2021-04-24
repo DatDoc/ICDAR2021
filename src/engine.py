@@ -10,9 +10,6 @@ from torch.utils.data import Dataset, DataLoader
 
 from datasets import ICDARDataset
 from augmentations import *
-from utils import custom_f1
-
-
 
 
 def prepare_dataloader(df, fold, train_batch, valid_batch,img_sz,num_workers, data_root):
