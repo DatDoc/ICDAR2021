@@ -27,6 +27,9 @@ def save_model(model, optimizer, scheduler, fold, epoch, save_every=False, best=
     if best == True:
         if not (os.path.isdir('./best_model')): os.mkdir('./best_model')
         torch.save(state, './best_model/vit_fold_{}_epoch_{}'.format(fold, epoch+1))
+def custom_f1(df, fold):
+
+    return 
 
 class EarlyStopping:
     def __init__(self, patience):

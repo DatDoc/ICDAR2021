@@ -8,6 +8,7 @@ from torch.autograd import Variable
 
 from datasets import ICDARDataset
 from augmentations import *
+from utils import custom_f1
 
 
 
@@ -69,8 +70,10 @@ def train_one_epoch(epoch, model, loss_fn, optimizer, train_loader, device, sche
             
     scheduler.step()
     accuracy = accuracy_score(y_pred=torch.tensor(lst_out), y_true=torch.tensor(lst_label))
-    print('{} epoch - train loss : {}, train accuracy : {}'.\
-          format(epoch + 1, np.round(avg_loss,6), np.round(accuracy*100,2)))
+    f1 = f1_score(y_pred=torch.tensor(lst_out), y_true=torch.tensor(lst_label))
+
+    print('{} epoch - train loss : {}, train accuracy : {}, train f1: {}'.\
+          format(epoch + 1, np.round(avg_loss,6), np.round(accuracy*100,2), np.round(f1*100, 2)))
 
 def valid_one_epoch(epoch, model, loss_fn, val_loader, device, scheduler):
     model.eval()

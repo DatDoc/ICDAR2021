@@ -27,4 +27,3 @@ class ICDARDataset(Dataset):
             return image, row["class"]
         else:
             return image
-

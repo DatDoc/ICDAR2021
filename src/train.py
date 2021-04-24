@@ -1,4 +1,5 @@
 import parser
+from sklearn.preprocessing import LabelEncoder
 
 from engine import prepare_dataloader, train_one_epoch, valid_one_epoch
 from utils import EarlyStopping
@@ -30,6 +31,10 @@ def run_training(opt):
     images_path = opt.data_dir
 
     n_classes = 13 # fixed coding :V
+    df = pd.read_csv(TRAIN_CSV)
+
+    labelencoder= LabelEncoder() 
+    df['class'] = labelencoder.fit_transform(df['class']) # Convert labels to class number
 
     train_loader, val_loader = prepare_dataloader(
         train_df, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
@@ -69,11 +74,10 @@ def run_training(opt):
     if opt.resume == True:
         checkpoint = torch.load(last)
 
-        start_epoch = checkpoint["epoch"]
         model.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         scheduler.load_state_dict(checkpoint["scheduler"])
-        best_loss = checkpoint["loss"]
+
 
     # --------------------------------------
     # Start training
@@ -82,7 +86,6 @@ def run_training(opt):
     for epoch in range(start_epoch, epochs):
         train_one_epoch(epoch, model, loss_tr, optimizer, train_loader, device, scheduler=scheduler)
         save_model(model, optimizer, scheduler, fold, epoch, save_every=False)
-        
         with torch.no_grad():
             val_loss = valid_one_epoch(epoch, model, loss_fn, val_loader, device, scheduler=None)
             early_stopping(val_loss, model, optimizer, scheduler, fold, epoch)
