@@ -63,6 +63,7 @@ def run_training(opt):
 
     _, handwritten_val_loader = prepare_dataloader(
         handwritten_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
+
     _, printed_val_loader = prepare_dataloader(
         printed_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
     
@@ -74,7 +75,7 @@ def run_training(opt):
 
     if opt.weights is not None:
         cp = torch.load(opt.weights)
-        model.load_state_dict(cp['model_state_dict'])
+        model.load_state_dict(cp['model'])
     
     # -------------------------------------------
     # Setup optimizer, scheduler, criterion loss
@@ -139,7 +140,6 @@ if __name__ == "__main__":
     parser.add_argument('--weights', type=str, help='add weight path')
     parser.add_argument('--model_name', type=str, default='tf_efficientnet_b4', help="ViT-B-32, RN50, RN50x4, RN101")
     parser.add_argument('--patience', type=int, default=5, help="set early stopping patience")
-    parser.add_argument('--loss', type=str, default="triplet", help='arcface, cosface, adacos, triplet')
     parser.add_argument('--img_size', type=int, default=384, help='resize the image')
     opt = parser.parse_args()
 

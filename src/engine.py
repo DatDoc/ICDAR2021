@@ -90,8 +90,16 @@ def valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_l
     lst_val_label = []
     avg_val_loss = 0
 
-    handwritten_status = tqdm(enumerate(handwritten_val_loader), total=len(handwritten_val_loader), desc = "Handwritten validation epoch " + str(epoch+1))
-    printed_status = tqdm(enumerate(printed_val_loader), total=len(printed_val_loader), desc = "Printed validation epoch " + str(epoch+1))
+    handwritten_status = tqdm(
+        enumerate(handwritten_val_loader), 
+        total=len(handwritten_val_loader), 
+        desc = "Handwritten validation epoch " + str(epoch+1),
+        position=0, leave=True)
+    printed_status = tqdm(
+        enumerate(printed_val_loader), 
+        total=len(printed_val_loader), 
+        desc = "Printed validation epoch " + str(epoch+1),
+        position=0, leave=True)
     
     for step, (images, labels) in handwritten_status:
         val_images = images.to(device).float()
@@ -135,7 +143,6 @@ def valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_l
 
     print('valid loss : {}, valid accuracy : {}'.\
           format(np.round(avg_val_loss, 6), np.round(accuracy*100,2)))
-
 
     return avg_val_loss
 

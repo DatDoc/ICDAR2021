@@ -25,7 +25,6 @@ def run_infer(opt):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_names = ['tf_efficientnet_b4_ns','resnext50_32x4d','vit_base_patch16_384']
     n_classes = 13
-    model_weights = [1,1,1,1,1,1]
     weight_path = opt.weight_path
     weights =  sorted(os.listdir(weight_path))
     
@@ -57,8 +56,8 @@ def run_infer(opt):
             model.load_state_dict(torch.load(os.path.join(weight_path, weight))['model'])
 
             with torch.no_grad():
-                for _ in range(CFG['tta']):
-                    tst_preds += [CFG['weights'][i]/sum(CFG['weights'])/CFG['tta'] * inference_one_epoch(model, tst_loader, device)]
+                for _ in range(tta):
+                    tst_preds += 1/tta * inference_one_epoch(model, tst_loader, device)]
         avg_tst_preds = np.mean(tst_preds, axis=0)
 
         if not (os.path.isdir('./total_preds')): os.mkdir('./total_preds')
