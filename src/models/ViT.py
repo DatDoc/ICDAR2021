@@ -17,6 +17,9 @@ class Classifier(nn.Module):
         elif model_name == 'vit_base_patch16_384':
             n_features = self.model.head.in_features
             self.model.head = nn.Linear(n_features, n_classes)
+        elif "nfnet" in model_name:
+            n_features = self.model.head.fc.in_features
+            self.model.head.fc = nn.Linear(n_features, n_classes)
         else:
             raise Exception("Add your models in Classifier")
 
