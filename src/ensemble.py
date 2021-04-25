@@ -6,6 +6,9 @@ import argparse
 
 def ensemble(opt):
 
+    test = pd.DataFrame()
+    test['image_id'] = sorted(list(os.listdir(opt.test_dir)))
+
     model_preds = []
     for npy_file in os.listdir(opt.npy_folder):
         npy_path = os.path.join(opt.npy_folder, npy_file)
@@ -15,14 +18,32 @@ def ensemble(opt):
     avg_tst_preds = np.mean(model_preds, axis=0)
 
     test['label'] = np.argmax(avg_tst_preds, axis=1)
-    test.to_csv('submission.csv', index=False)
-    test.head()
+    test['prob'] = np.amax(avg_tst_preds, axis=1)
+
+    if opt.pseudo_label:
+        field_names = ['image_id', 'label']
+        pseudo_labeling = []
+        for i, row in test.iterrows():
+            if row["prob"] >= opt.pseudo_thr:
+                tmp = {
+                    'image_id': row["image_id"],
+                    'label': row["label"]
+                }
+                pseudo_labeling.append(tmp)
+        with open('pseudo_labeling.csv', 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames = field_names)
+        writer.writeheader()
+        writer.writerows(pseudo_labeling)
+
+    test[['image_id', 'label']].to_csv('submission.csv', index=False)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('--test_dir', type=str, help='test directory')
     parser.add_argument('--npy_folder', type=str, help='npy directory')
+    parser.add_argument('--pseudo_label', action='store_true', help='activate pseudo-labeling')
     parser.add_argument('--pseudo_thr', type=int, default=0.9, help='threshold to get pseudo-labeling')
-    
+
     opt = parser.parse_args()  
     ensemble(opt)
