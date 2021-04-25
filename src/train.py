@@ -128,7 +128,7 @@ def run_training(opt):
                 },
                 os.path.join(best))
         
-            print('best model found for epoch {}'.format(epoch+1))
+                print('best model found for epoch {}'.format(epoch+1))
 
         torch.save({
                 'epoch': epoch,
