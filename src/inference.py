@@ -37,7 +37,7 @@ def load_models(models_path, n_classes, device):
         elif "resnext" in path:
             model = Classifier("resnext50_32x4d", n_classes).to(device)
 
-        for idx in range(1): # number of fold
+        for idx in range(5): # number of fold
             model_path = os.path.join(path, "fold{}".format(idx))
 
             model.load_state_dict(torch.load(os.path.join(model_path, "best.pt"))['model'])
