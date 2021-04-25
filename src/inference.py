@@ -9,7 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from utils import *
 from augmentations import *
-from models.ViT import Classifier
+from models import Classifier
 from datasets import ICDARDataset
 
 def inference_one_epoch(model, data_loader, device):

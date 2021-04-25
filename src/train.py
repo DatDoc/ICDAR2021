@@ -5,7 +5,7 @@ import pandas as pd
 
 from engine import prepare_dataloader, train_one_epoch, valid_one_epoch
 from utils import *
-from models.ViT import Classifier
+from models import Classifier
 
 import torch
 from torch.optim import AdamW
