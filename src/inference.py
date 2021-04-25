@@ -50,10 +50,12 @@ def run_infer(opt):
         pin_memory=False)
 
     
-    # model = Classifier(model_arch, n_classes).to(device)
+    print("[INFO] Found {} folds in weight path".format(len(os.listdir(weight_path))))
+    print(os.listdir(weight_path))
 
     print("[INFO] Start inference ...")
     for fold in os.listdir(weight_path):
+        print(fold)
         model = Classifier(opt.model_arch, n_classes).to(device)
         model_path = os.path.join(weight_path, fold, "best.pt")
         model.load_state_dict(torch.load(model_path)['model'])
@@ -68,7 +70,7 @@ def run_infer(opt):
     if not (os.path.isdir(opt.work_dir)): 
         os.mkdir(opt.work_dir)
         
-    np.save(os.path.join(opt.work_dir, "total_preds.npy"), avg_tst_preds)
+    np.save(os.path.join(opt.work_dir, "{}.npy".format(opt.model_arch)), avg_tst_preds)
     test['label'] = np.argmax(avg_tst_preds, axis=1)
     test.to_csv('submission.csv', index=False)
     
