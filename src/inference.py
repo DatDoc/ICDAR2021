@@ -57,7 +57,7 @@ def run_infer(opt):
 
     TEST_DIR = opt.test_dir
     test = pd.DataFrame()
-    test['image_id'] = list(os.listdir(TEST_DIR))
+    test['image_id'] = sorted(list(os.listdir(TEST_DIR)))
     
     testset = ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms(opt.img_size))
     testset_vit = ICDARDataset(test, TEST_DIR, transforms=get_inference_transforms(384))
