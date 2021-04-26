@@ -60,12 +60,13 @@ def run_training(opt):
 
     train_loader, val_loader = prepare_dataloader(
         data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
+    
+    if not opt.ovr_val:
+        _, handwritten_val_loader = prepare_dataloader(
+            handwritten_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
 
-    _, handwritten_val_loader = prepare_dataloader(
-        handwritten_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
-
-    _, printed_val_loader = prepare_dataloader(
-        printed_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
+        _, printed_val_loader = prepare_dataloader(
+            printed_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
     
     # --------------------------------------
     # Models
