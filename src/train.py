@@ -46,22 +46,20 @@ def run_training(opt):
     # Setup train and validation set
     # --------------------------------------
     data = pd.read_csv(opt.train_csv)
-    handwritten_data = pd.read_csv(opt.handwritten_csv)
-    printed_data = pd.read_csv(opt.printed_csv)
     images_path = opt.data_dir
 
     n_classes = 13 # fixed coding :V
 
-    data['class'] = data.apply(lambda row: categ[row["class"]], axis =1)
-
-    handwritten_data['class'] = handwritten_data.apply(lambda row: categ[row["class"]], axis =1)
-    printed_data['class'] = printed_data.apply(lambda row: categ[row["class"]], axis =1)
-
+    # data['label'] = data.apply(lambda row: categ[row["label"]], axis =1)
 
     train_loader, val_loader = prepare_dataloader(
         data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
     
     if not opt.ovr_val:
+        handwritten_data = pd.read_csv(opt.handwritten_csv)
+        printed_data = pd.read_csv(opt.printed_csv)
+        handwritten_data['label'] = handwritten_data.apply(lambda row: categ[row["label"]], axis =1)
+        printed_data['label'] = printed_data.apply(lambda row: categ[row["label"]], axis =1)
         _, handwritten_val_loader = prepare_dataloader(
             handwritten_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
 
@@ -170,7 +168,7 @@ if __name__ == "__main__":
     parser.add_argument('--model_name', type=str, default='tf_efficientnet_b4', help="ViT-B-32, RN50, RN50x4, RN101")
     parser.add_argument('--patience', type=int, default=5, help="set early stopping patience")
     parser.add_argument('--img_size', type=int, default=384, help='resize the image')
-    parser.add_argument('--ovr_val', action='store_true', help='overall validation'))
+    parser.add_argument('--ovr_val', action='store_true', help='overall validation')
     opt = parser.parse_args()
 
     seed_torch(seed=opt.seed)
