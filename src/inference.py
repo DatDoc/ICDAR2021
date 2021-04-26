@@ -86,8 +86,8 @@ if __name__ == "__main__":
     parser.add_argument('--num_workers', type=int, default=2)
     parser.add_argument('--work_dir', type=str, default='CLIP/fold0', help='path to save model')
     parser.add_argument('--weight_path', type=str, help='model.pt path(s)')  # /content/ViT
-                                                                                        # /content/resnext
-                                                                                        # /content/nfnet
+                                                                            # /content/resnext
+                                                                            # /content/nfnet
     parser.add_argument('--img_size', type=int, default=224, help='resize the image')
     parser.add_argument('--tta', type=int, default=1, help='number of tta')
     opt = parser.parse_args()

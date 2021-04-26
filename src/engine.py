@@ -145,3 +145,23 @@ def valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_l
     return avg_val_loss
 
 
+def valid_one_epoch_overall(epoch, model, loss_fn, val_loader, device, scheduler):
+    model.eval()
+    lst_val_out = []
+    lst_val_label = []
+    avg_val_loss = 0
+    status = tqdm(enumerate(val_loader), total=len(val_loader), position=0, leave=True)
+    for step, (images, labels) in status:
+        val_images = images.to(device).float()
+        val_labels = labels.to(device).long()
+
+        val_preds = model(val_images)
+        lst_val_out += val_preds.argmax(1)
+        lst_val_label += val_labels
+        loss = loss_fn(val_preds, val_labels)
+                       
+        avg_val_loss += loss.item() / len(val_loader)
+    accuracy = accuracy_score(y_pred=torch.tensor(lst_val_out), y_true=torch.tensor(lst_val_label))
+    print('{} epoch - valid loss : {}, valid accuracy : {}'.\
+          format(epoch + 1, np.round(avg_val_loss, 6), np.round(accuracy*100,2)))
+    return avg_val_loss

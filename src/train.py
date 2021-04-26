@@ -115,7 +115,11 @@ def run_training(opt):
     for epoch in range(start_epoch, epochs):
         train_one_epoch(epoch, model, loss_tr, optimizer, train_loader, device, scheduler=scheduler, scaler=scaler)
         with torch.no_grad():
-            val_loss = valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_loader, device, scheduler=None)
+            if opt.ovr_val:
+                val_loss = valid_one_epoch_overall(epoch, model, loss_fn, val_loader, device, scheduler=None)
+            else:
+                val_loss = valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_loader, device, scheduler=None)
+            
             if val_loss < best_loss:
                 best_loss = val_loss
                 best_epoch = epoch
@@ -165,6 +169,7 @@ if __name__ == "__main__":
     parser.add_argument('--model_name', type=str, default='tf_efficientnet_b4', help="ViT-B-32, RN50, RN50x4, RN101")
     parser.add_argument('--patience', type=int, default=5, help="set early stopping patience")
     parser.add_argument('--img_size', type=int, default=384, help='resize the image')
+    parser.add_argument('--ovr_val', action='store_true', help='overall validation'))
     opt = parser.parse_args()
 
     seed_torch(seed=opt.seed)
