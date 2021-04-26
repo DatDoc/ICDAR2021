@@ -50,7 +50,7 @@ def run_training(opt):
 
     n_classes = 13 # fixed coding :V
 
-    # data['label'] = data.apply(lambda row: categ[row["label"]], axis =1)
+    data['class'] = data.apply(lambda row: categ[row["class"]], axis =1)
 
     train_loader, val_loader = prepare_dataloader(
         data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
@@ -58,8 +58,8 @@ def run_training(opt):
     if not opt.ovr_val:
         handwritten_data = pd.read_csv(opt.handwritten_csv)
         printed_data = pd.read_csv(opt.printed_csv)
-        handwritten_data['label'] = handwritten_data.apply(lambda row: categ[row["label"]], axis =1)
-        printed_data['label'] = printed_data.apply(lambda row: categ[row["label"]], axis =1)
+        handwritten_data['class'] = handwritten_data.apply(lambda row: categ[row["class"]], axis =1)
+        printed_data['class'] = printed_data.apply(lambda row: categ[row["class"]], axis =1)
         _, handwritten_val_loader = prepare_dataloader(
             handwritten_data, opt.fold, train_batch, valid_batch, opt.img_size, opt.num_workers, data_root=images_path)
 

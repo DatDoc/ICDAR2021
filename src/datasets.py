@@ -10,7 +10,7 @@ class ICDARDataset(Dataset):
         self.df = df
         self.image_root = image_root
         self.transforms = transforms
-        self.has_target = ('label' in df)
+        self.has_target = ('class' in df)
 
     def __len__(self):
         return len(self.df)
@@ -24,6 +24,6 @@ class ICDARDataset(Dataset):
             image = self.transforms(image=image)['image']
         
         if self.has_target:
-            return image, row["label"]
+            return image, row["class"]
         else:
             return image

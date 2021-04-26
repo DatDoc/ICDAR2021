@@ -38,7 +38,7 @@ def ensemble(opt):
             writer.writeheader()
             writer.writerows(pseudo_labeling)
 
-    test[['image_id', 'label']].to_csv(os.path.join(opt.save_dir, 'submission.csv'), index=False)
+    test[['image_id', 'label']].to_csv(os.path.join(opt.save_dir, 'vit_submission.csv'), index=False)
 
 
 if __name__ == "__main__":

@@ -71,7 +71,6 @@ def train_one_epoch(epoch, model, loss_fn, optimizer, train_loader, device, sche
     scheduler.step()
   
     accuracy = accuracy_score(y_pred=torch.tensor(lst_out), y_true=torch.tensor(lst_label))
-    
     print('train loss : {}, train accuracy : {}'.\
           format(np.round(avg_loss,6), np.round(accuracy*100,2)))
 
@@ -131,9 +130,9 @@ def valid_one_epoch(epoch, model, loss_fn, handwritten_val_loader, printed_val_l
 
     accuracy = accuracy_score(y_pred=torch.tensor(lst_val_out), y_true=torch.tensor(lst_val_label))
 
-    handwritten_f1 = f1_score(y_pred=torch.tensor(handwritten_lst_val_out), y_true=torch.tensor(handwritten_lst_val_label), average="micro")
-    printed_f1 = f1_score(y_pred=torch.tensor(printed_lst_val_out), y_true=torch.tensor(printed_lst_val_label), average="micro")
-    mixed_f1 = f1_score(y_pred=torch.tensor(lst_val_out), y_true=torch.tensor(lst_val_label), average="micro")
+    handwritten_f1 = f1_score(y_pred=torch.tensor(handwritten_lst_val_out), y_true=torch.tensor(handwritten_lst_val_label), average="macro")
+    printed_f1 = f1_score(y_pred=torch.tensor(printed_lst_val_out), y_true=torch.tensor(printed_lst_val_label), average="macro")
+    mixed_f1 = f1_score(y_pred=torch.tensor(lst_val_out), y_true=torch.tensor(lst_val_label), average="macro")
     
     print("handwritten f1: {}".format(handwritten_f1))
     print("printed f1: {}".format(printed_f1))
@@ -162,6 +161,7 @@ def valid_one_epoch_overall(epoch, model, loss_fn, val_loader, device, scheduler
                        
         avg_val_loss += loss.item() / len(val_loader)
     accuracy = accuracy_score(y_pred=torch.tensor(lst_val_out), y_true=torch.tensor(lst_val_label))
-    print('{} epoch - valid loss : {}, valid accuracy : {}'.\
-          format(epoch + 1, np.round(avg_val_loss, 6), np.round(accuracy*100,2)))
+    f1 = f1_score(y_pred=torch.tensor(lst_val_out), y_true=torch.tensor(lst_val_label), average="macro")
+    print('{} epoch - valid loss : {}, valid accuracy : {}, valid f1 : {}'.\
+          format(epoch + 1, np.round(avg_val_loss, 6), np.round(accuracy*100,2), f1))
     return avg_val_loss
