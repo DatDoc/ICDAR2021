@@ -1,2 +1,2 @@
 # ICDAR2021
-ICDAR2021 Competition
+ICDAR2021 Competition (end)
