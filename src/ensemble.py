@@ -18,18 +18,19 @@ def ensemble(opt):
         model_preds += [result]
     
     avg_tst_preds = np.mean(model_preds, axis=0)
+
     
-    test['label'] = np.argmax(avg_tst_preds, axis=1)
+    test['class'] = np.argmax(avg_tst_preds, axis=1)
     test['prob'] = np.amax(avg_tst_preds, axis=1)
 
     if opt.pseudo_label:
-        field_names = ['image_id', 'label']
+        field_names = ['image_id', 'class']
         pseudo_labeling = []
         for i, row in tqdm(test.iterrows()):
             if row["prob"] >= opt.pseudo_thr:
                 tmp = {
                     'image_id': row["image_id"],
-                    'label': row["label"]
+                    'class': row["class"]
                 }
                 pseudo_labeling.append(tmp)
 
@@ -38,7 +39,7 @@ def ensemble(opt):
             writer.writeheader()
             writer.writerows(pseudo_labeling)
 
-    test[['image_id', 'label']].to_csv(os.path.join(opt.save_dir, 'vit_submission.csv'), index=False)
+    test[['image_id', 'class']].to_csv(os.path.join(opt.save_dir, 'submission.csv'), index=False)
 
 
 if __name__ == "__main__":
