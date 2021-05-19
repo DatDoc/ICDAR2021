@@ -14,14 +14,14 @@
           
 ## Our method in competion:
   
-    -   In SIW 2021 ICDAR Competition on Script Identification in the Wild, after
+        In SIW 2021 ICDAR Competition on Script Identification in the Wild, after
       observing the dataset, the participants assumed that the score of the third task
       is base on the first two, so they decided to turn their attention for maximizing the
       accuracy score of task 1 and task 2 separately. They divided the original problem
       into 2 main phases. First, they built a two-class classifier to classify handwritten
       and printed samples. Then, for each one of them were independently train two
       more classifiers to identify thirteen classes.
-      #- Handwritten/Printed type classification: 
+      **- Handwritten/Printed type classification:** 
       They used EfficientNet-B7 architecture which is pre-trained on ImageNet. Which was stacked 1 fully con-
       nected layer with 1024 units in front of the output layer. A sigmoid loss function
       is used since it is a binary classification. An Adam optimizer with learning rate of
